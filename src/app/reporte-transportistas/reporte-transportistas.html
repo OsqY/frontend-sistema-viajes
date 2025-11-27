@@ -1,0 +1,151 @@
+<div class="bg-white shadow rounded-lg p-6">
+  <div class="mb-6 border-b pb-4">
+    <h2 class="text-xl font-bold text-gray-800">Reporte de Viajes</h2>
+    <p class="text-sm text-gray-600">
+      Filtra por fechas, sucursal o transportista para ver las métricas.
+    </p>
+  </div>
+
+  <form
+    [formGroup]="filterForm"
+    (ngSubmit)="generarReporte()"
+    class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
+  >
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+      <input
+        type="date"
+        formControlName="fechaInicio"
+        class="border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+      <input
+        type="date"
+        formControlName="fechaFin"
+        class="border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 mb-1">Sucursal</label>
+      <select
+        formControlName="sucursalId"
+        class="border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+      >
+        <option value="">Todas</option>
+        <option *ngFor="let suc of sucursales$ | async" [value]="suc.id">{{ suc.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-700 mb-1">Transportista</label>
+      <select
+        formControlName="transportistaId"
+        class="border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+      >
+        <option value="">Todos</option>
+        <option *ngFor="let trans of transportistas$ | async" [value]="trans.id">
+          {{ trans.nombres }} {{ trans.apellidos }}
+        </option>
+      </select>
+    </div>
+
+    <div class="md:col-span-4 flex justify-end space-x-3 mt-2">
+      <button
+        type="button"
+        (click)="limpiarFiltros()"
+        class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition"
+      >
+        Limpiar
+      </button>
+      <button
+        type="submit"
+        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+      >
+        Generar Reporte
+      </button>
+    </div>
+  </form>
+
+  <div *ngIf="reportData.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+      <p class="text-sm text-indigo-600 font-semibold">Total Viajes</p>
+      <p class="text-2xl font-bold text-indigo-900">{{ totalViajes }}</p>
+    </div>
+    <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+      <p class="text-sm text-green-600 font-semibold">Total Tarifa</p>
+      <p class="text-2xl font-bold text-green-900">{{ totalTarifa | currency }}</p>
+    </div>
+    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+      <p class="text-sm text-blue-600 font-semibold">Total Kms</p>
+      <p class="text-2xl font-bold text-blue-900">{{ totalDistancia | number:'1.0-2' }} km</p>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto border rounded-lg" *ngIf="reportData.length > 0; else noData">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th
+            scope="col"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Fecha
+          </th>
+          <th
+            scope="col"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Transportista
+          </th>
+          <th
+            scope="col"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Sucursal
+          </th>
+          <th
+            scope="col"
+            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Distancia
+          </th>
+          <th
+            scope="col"
+            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Tarifa
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let item of reportData">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {{ item.fecha | date:'dd/MM/yyyy' }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+            {{ item.transportistaNombre }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+            {{ item.sucursalNombre }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+            {{ item.distanciaTotal }} km
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right font-medium">
+            {{ item.tarifaTotal | currency }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #noData>
+    <div class="text-center py-10 text-gray-500" *ngIf="filterForm.touched">
+      No se encontraron datos para los filtros seleccionados o aún no has generado el reporte.
+    </div>
+  </ng-template>
+</div>
