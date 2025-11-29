@@ -13,4 +13,7 @@ export interface RegisterInfo {
   password: string;
 }
 
-export interface Usuario {}
+export interface UsuarioDropdown {
+  id: string;
+  email: string;
+}

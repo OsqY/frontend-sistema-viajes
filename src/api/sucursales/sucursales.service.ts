@@ -25,22 +25,24 @@ export class SucursalService {
 
     if (filter.direccionFilter) params = params.set('direccionFilter', filter.direccionFilter);
 
-    return this.http.get<Sucursal[]>(`${this.apiUrl}/sucursal`, { params });
+    return this.http.get<Sucursal[]>(`${this.apiUrl}/sucursal`, { params, withCredentials: true });
   }
 
   getById(id: number): Observable<Sucursal> {
-    return this.http.get<Sucursal>(`${this.apiUrl}/sucursal/${id}`);
+    return this.http.get<Sucursal>(`${this.apiUrl}/sucursal/${id}`, { withCredentials: true });
   }
 
   create(sucursal: CreateSucursalDTO): Observable<Sucursal> {
-    return this.http.post<Sucursal>(`${this.apiUrl}/sucursal`, sucursal);
+    return this.http.post<Sucursal>(`${this.apiUrl}/sucursal`, sucursal, { withCredentials: true });
   }
 
   update(sucursal: UpdateSucursalDTO): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/sucursal/${sucursal.id}`, sucursal);
+    return this.http.put<void>(`${this.apiUrl}/sucursal/${sucursal.id}`, sucursal, {
+      withCredentials: true,
+    });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/sucursal/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/sucursal/${id}`, { withCredentials: true });
   }
 }

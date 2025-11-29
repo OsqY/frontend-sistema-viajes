@@ -1,17 +1,25 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { SucursalUsuariosService } from '../../api/sucursalUsuarios/sucursalUsuarios.services';
 import {
   SucursalUsuario,
   CreateSucursalUsuarioDTO,
 } from '../../types/sucursalUsuarios/SucursalUsuario';
+import { AuthService } from '../../api/auth/auth.service';
+import { UsuarioDropdown } from '../../types/auth/Auth';
 
 @Component({
   selector: 'app-usuario-sucursales',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule],
   templateUrl: './usuario-sucursales.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -19,9 +27,11 @@ export class UsuarioSucursales {
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private sucursalUsuarioService = inject(SucursalUsuariosService);
+  private authService = inject(AuthService);
 
   sucursalId = signal<number>(0);
   colaboradores = signal<SucursalUsuario[]>([]);
+  usuarios = signal<UsuarioDropdown[]>([]);
   isLoading = signal<boolean>(false);
 
   form: FormGroup;
@@ -29,8 +39,9 @@ export class UsuarioSucursales {
   constructor() {
     this.form = this.fb.group({
       usuarioId: ['', Validators.required],
-      distancia: [0, [Validators.required, Validators.min(1), Validators.max(50)]],
+      distancia: [1, [Validators.required, Validators.min(1), Validators.max(50)]],
     });
+    this.loadUsuarios();
 
     this.route.paramMap.subscribe((params) => {
       const id = Number(params.get('sucursalId'));
@@ -38,6 +49,17 @@ export class UsuarioSucursales {
         this.sucursalId.set(id);
         this.loadColaboradores(id);
       }
+    });
+  }
+
+  loadUsuarios() {
+    this.isLoading.set(true);
+    this.authService.loadUsuarios().subscribe({
+      next: (data) => {
+        this.isLoading.set(false);
+        this.usuarios.set(data);
+      },
+      error: () => this.isLoading.set(false),
     });
   }
 
@@ -72,7 +94,7 @@ export class UsuarioSucursales {
 
     this.sucursalUsuarioService.create(dto).subscribe({
       next: () => {
-        this.form.reset({ distancia: 0 });
+        this.form.reset({ distancia: 1 });
         this.loadColaboradores(this.sucursalId());
       },
       error: (err) => {

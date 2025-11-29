@@ -30,25 +30,28 @@ export class UsuarioViajesService {
 
     if (filter.maxDistancia) params = params.set('maxDistancia', filter.maxDistancia.toString());
 
-    return this.http.get<UsuarioViaje[]>(this.apiUrl, { params });
+    return this.http.get<UsuarioViaje[]>(this.apiUrl, { params, withCredentials: true });
   }
 
   getById(id: number): Observable<UsuarioViaje> {
-    return this.http.get<UsuarioViaje>(`${this.apiUrl}/${id}`);
+    return this.http.get<UsuarioViaje>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
   create(usuarioViaje: CreateUsuarioViajeDTO): Observable<void> {
-    return this.http.post<void>(this.apiUrl, usuarioViaje);
+    return this.http.post<void>(this.apiUrl, usuarioViaje, { withCredentials: true });
   }
 
   update(usuarioViaje: UsuarioViaje): Observable<UsuarioViaje> {
     return this.http.put<UsuarioViaje>(
       `${this.apiUrl}/${usuarioViaje.viajeId}/${usuarioViaje.usuarioId}`,
       usuarioViaje,
+      { withCredentials: true },
     );
   }
 
   delete(viajeId: number, usuarioId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${viajeId}/${usuarioId}`);
+    return this.http.delete<void>(`${this.apiUrl}/${viajeId}/${usuarioId}`, {
+      withCredentials: true,
+    });
   }
 }

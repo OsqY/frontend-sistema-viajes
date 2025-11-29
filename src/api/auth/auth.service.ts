@@ -2,7 +2,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { catchError, map, Observable, of } from 'rxjs';
-import { LoginInfo, ManageInfo, RegisterInfo } from '../../types/auth/Auth';
+import { LoginInfo, ManageInfo, RegisterInfo, UsuarioDropdown } from '../../types/auth/Auth';
 
 @Injectable({
   providedIn: 'root',
@@ -43,5 +43,11 @@ export class AuthService {
         map((response) => response.status === 200),
         catchError(() => of(false)),
       );
+  }
+
+  loadUsuarios(): Observable<UsuarioDropdown[]> {
+    return this.http.get<UsuarioDropdown[]>(`${this.apiUrl}/api/Auth/usuarios`, {
+      withCredentials: true,
+    });
   }
 }

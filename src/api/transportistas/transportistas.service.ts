@@ -24,22 +24,24 @@ export class TransportistaService {
     if (filter.nombreFilter) params = params.set('nombreFilter', filter.nombreFilter);
     if (filter.apellidosFilter) params = params.set('apellidosFilter', filter.apellidosFilter);
 
-    return this.http.get<Transportista[]>(this.apiUrl, { params });
+    return this.http.get<Transportista[]>(this.apiUrl, { params, withCredentials: true });
   }
 
   getById(id: number): Observable<Transportista> {
-    return this.http.get<Transportista>(`${this.apiUrl}/${id}`);
+    return this.http.get<Transportista>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
   create(transportista: CreateTransportistaDTO): Observable<Transportista> {
-    return this.http.post<Transportista>(this.apiUrl, transportista);
+    return this.http.post<Transportista>(this.apiUrl, transportista, { withCredentials: true });
   }
 
   update(transportista: UpdateTransportistaDTO): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${transportista.id}`, transportista);
+    return this.http.put<void>(`${this.apiUrl}/${transportista.id}`, transportista, {
+      withCredentials: true,
+    });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 }

@@ -27,22 +27,28 @@ export class SucursalUsuariosService {
     if (filter.minDistancia) params = params.set('minDistancia', filter.minDistancia.toString());
     if (filter.maxDistancia) params = params.set('maxDistancia', filter.maxDistancia.toString());
 
-    return this.http.get<SucursalUsuario[]>(this.apiUrl, { params });
+    return this.http.get<SucursalUsuario[]>(this.apiUrl, { params, withCredentials: true });
   }
 
   getById(sucursalId: number, usuarioId: string): Observable<SucursalUsuario> {
-    return this.http.get<SucursalUsuario>(`${this.apiUrl}/${sucursalId}/${usuarioId}`);
+    return this.http.get<SucursalUsuario>(`${this.apiUrl}/${sucursalId}/${usuarioId}`, {
+      withCredentials: true,
+    });
   }
 
   create(dto: CreateSucursalUsuarioDTO): Observable<void> {
-    return this.http.post<void>(this.apiUrl, dto);
+    return this.http.post<void>(this.apiUrl, dto, { withCredentials: true });
   }
 
   update(dto: SucursalUsuario): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${dto.sucursalId}/${dto.usuarioId}`, dto);
+    return this.http.put<void>(`${this.apiUrl}/${dto.sucursalId}/${dto.usuarioId}`, dto, {
+      withCredentials: true,
+    });
   }
 
   delete(sucursalId: number, usuarioId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${sucursalId}/${usuarioId}`);
+    return this.http.delete<void>(`${this.apiUrl}/${sucursalId}/${usuarioId}`, {
+      withCredentials: true,
+    });
   }
 }

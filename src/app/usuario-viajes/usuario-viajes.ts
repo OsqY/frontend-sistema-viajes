@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsuarioViajesService } from '../../api/usuarioViajes/usuarioViajes.service';
 import { UsuarioViaje, CreateUsuarioViajeDTO } from '../../types/usuarioViajes/UsuarioViaje';
+import { AuthService } from '../../api/auth/auth.service';
+import { UsuarioDropdown } from '../../types/auth/Auth';
 
 @Component({
   selector: 'app-usuario-viajes',
@@ -16,9 +18,11 @@ export class UsuarioViajes {
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private usuarioViajesService = inject(UsuarioViajesService);
+  private authService = inject(AuthService);
 
   viajeId = signal<number>(0);
   usuarios = signal<UsuarioViaje[]>([]);
+  usuariosDropdown = signal<UsuarioDropdown[]>([]);
   isLoading = signal<boolean>(false);
 
   form: FormGroup;
@@ -26,10 +30,12 @@ export class UsuarioViajes {
   constructor() {
     this.form = this.fb.group({
       usuarioId: ['', Validators.required],
-      distancia: [0, [Validators.required, Validators.min(1), Validators.max(100)]],
+      distancia: [1, [Validators.required, Validators.min(1), Validators.max(100)]],
       tarifa: [0, [Validators.required, Validators.min(0)]],
-      fecha: [new Date().toISOString().split('T')[0], Validators.required], // Fecha hoy por defecto
+      fecha: [new Date().toISOString().split('T')[0], Validators.required],
     });
+
+    this.loadUsuariosParaDropdown();
 
     this.route.paramMap.subscribe((params) => {
       const id = Number(params.get('viajeId'));
@@ -37,6 +43,13 @@ export class UsuarioViajes {
         this.viajeId.set(id);
         this.loadUsuarios(id);
       }
+    });
+  }
+
+  loadUsuariosParaDropdown() {
+    this.authService.loadUsuarios().subscribe({
+      next: (data) => this.usuariosDropdown.set(data),
+      error: (err) => console.error(err),
     });
   }
 
@@ -74,8 +87,9 @@ export class UsuarioViajes {
     this.usuarioViajesService.create(dto).subscribe({
       next: () => {
         this.form.reset({
+          usuarioId: '', // Limpiar el select
           fecha: new Date().toISOString().split('T')[0],
-          distancia: 0,
+          distancia: 1,
           tarifa: 0,
         });
         this.loadUsuarios(this.viajeId());

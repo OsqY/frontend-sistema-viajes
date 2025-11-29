@@ -6,6 +6,8 @@ import { SucursalService } from '../../api/sucursales/sucursales.service';
 import { Viaje, FilterViajeDTO, CreateViajeDTO, UpdateViajeDTO } from '../../types/viajes/Viaje';
 import { Sucursal } from '../../types/sucursales/Sucursal';
 import { RouterLink } from '@angular/router';
+import { Transportista } from '../../types/transportistas/Transportista';
+import { TransportistaService } from '../../api/transportistas/transportistas.service';
 
 interface ViajeFormData {
   id: number;
@@ -24,9 +26,11 @@ interface ViajeFormData {
 export class Viajes {
   private viajeService = inject(ViajesService);
   private sucursalService = inject(SucursalService);
+  private transportistaService = inject(TransportistaService);
 
   viajes = signal<Viaje[]>([]);
   sucursales = signal<Sucursal[]>([]);
+  transportistas = signal<Transportista[]>([]);
   isEditing = signal<boolean>(false);
   isLoading = signal<boolean>(false);
 
@@ -50,6 +54,14 @@ export class Viajes {
   constructor() {
     this.loadViajes();
     this.loadSucursalesForSelect();
+    this.loadTransportistasForSelect();
+  }
+
+  loadTransportistasForSelect() {
+    this.transportistaService.getAll({ pageNumber: 1, pageSize: 100 }).subscribe({
+      next: (data) => this.transportistas.set(data),
+      error: (err) => console.error('Error cargando transportistas', err),
+    });
   }
 
   loadViajes() {

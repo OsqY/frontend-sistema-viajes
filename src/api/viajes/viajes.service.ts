@@ -42,23 +42,23 @@ export class ViajesService {
 
     if (filter.maxFecha) params = params.set('maxFecha', filter.maxFecha);
 
-    return this.http.get<Viaje[]>(this.apiUrl, { params });
+    return this.http.get<Viaje[]>(this.apiUrl, { withCredentials: true, params: params });
   }
 
   getById(id: number): Observable<Viaje> {
-    return this.http.get<Viaje>(`${this.apiUrl}/${id}`);
+    return this.http.get<Viaje>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
   create(viaje: CreateViajeDTO): Observable<Viaje> {
-    return this.http.post<Viaje>(this.apiUrl, viaje);
+    return this.http.post<Viaje>(this.apiUrl, viaje, { withCredentials: true });
   }
 
   update(viaje: UpdateViajeDTO): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${viaje.id}`, viaje);
+    return this.http.put<void>(`${this.apiUrl}/${viaje.id}`, viaje, { withCredentials: true });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 
   getReport(filter: FilterReportDTO): Observable<ViajeReportDTO[]> {
@@ -71,6 +71,9 @@ export class ViajesService {
     if (filter.minTarifaTotal) params = params.set('minTarifaTotal', filter.minTarifaTotal);
     if (filter.maxTarifaTotal) params = params.set('maxTarifaTotal', filter.maxTarifaTotal);
 
-    return this.http.get<ViajeReportDTO[]>(`${this.apiUrl}/report`, { params });
+    return this.http.get<ViajeReportDTO[]>(`${this.apiUrl}/report`, {
+      params,
+      withCredentials: true,
+    });
   }
 }
