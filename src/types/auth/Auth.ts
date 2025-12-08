@@ -16,4 +16,5 @@ export interface RegisterInfo {
 export interface UsuarioDropdown {
   id: string;
   email: string;
+  distancia: number;
 }

@@ -46,6 +46,8 @@ export class Viajes {
   });
 
   viajeForm = form(this.viajeModel, (f) => {
+    min(f.transportistaId, 1, { message: 'El transportista es requerido' });
+    min(f.sucursalId, 1, { message: 'La sucursal es requerida' });
     required(f.transportistaId, { message: 'El transportista es requerido' });
 
     required(f.sucursalId, { message: 'Debe seleccionar una sucursal' });
@@ -146,7 +148,9 @@ export class Viajes {
     const value = input.value;
 
     if (value && !isNaN(Number(value))) {
-      this.filter.update((f) => ({ ...f, transportistaId: Number(value) }));
+      this.filter.update((f) => ({
+        ...f,
+      }));
     } else {
       this.filter.update((f) => {
         const { transportistaId, ...rest } = f;

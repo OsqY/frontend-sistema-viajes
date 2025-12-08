@@ -54,7 +54,7 @@ export class UsuarioSucursales {
 
   loadUsuarios() {
     this.isLoading.set(true);
-    this.authService.loadUsuarios().subscribe({
+    this.authService.loadUsuariosSucursal(this.sucursalId()).subscribe({
       next: (data) => {
         this.isLoading.set(false);
         this.usuarios.set(data);

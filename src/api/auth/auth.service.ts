@@ -50,4 +50,19 @@ export class AuthService {
       withCredentials: true,
     });
   }
+
+  loadUsuariosSucursal(sucursalId: number): Observable<UsuarioDropdown[]> {
+    return this.http.get<UsuarioDropdown[]>(
+      `${this.apiUrl}/api/Auth/usuarios-sucursal/${sucursalId}`,
+      {
+        withCredentials: true,
+      },
+    );
+  }
+
+  loadUsuariosViaje(viajeId: number): Observable<UsuarioDropdown[]> {
+    return this.http.get<UsuarioDropdown[]>(`${this.apiUrl}/api/Auth/usuarios-viaje/${viajeId}`, {
+      withCredentials: true,
+    });
+  }
 }

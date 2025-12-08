@@ -4,12 +4,14 @@
       <h2 class="text-2xl font-bold text-gray-800">Pasajeros del Viaje #{{ viajeId() }}</h2>
       <p class="text-gray-500 text-sm mt-1">Gestión de usuarios asignados a este viaje</p>
     </div>
-    <button
-      routerLink="/viajes"
-      class="cursor-pointer bg-indigo-300 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded"
-    >
-      Volver a Viajes
-    </button>
+    <div class="flex items-center gap-4">
+      <button
+        routerLink="/viajes"
+        class="cursor-pointer bg-indigo-300 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded"
+      >
+        Volver a Viajes
+      </button>
+    </div>
   </div>
 
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 mb-6">
@@ -21,10 +23,10 @@
     >
       <div class="md:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-1">Pasajero</label>
-
         <select
           formControlName="usuarioId"
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+          (change)="onSelection($event)"
+          class="block w-full rounded-lg border-0 px-2 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-300 sm:text-sm sm:leading-6"
         >
           <option value="" disabled selected>Seleccione un pasajero</option>
           @for (usuario of usuariosDropdown(); track usuario.id) {
@@ -35,11 +37,25 @@
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Distancia (km)</label>
         <input
+          readonly
           type="number"
           formControlName="distancia"
           placeholder="0"
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+          class="block w-full rounded-lg border-0 px-2 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-300 sm:text-sm sm:leading-6"
+          [class.border-red-500]="form.get('distancia')?.errors?.['distanciaExcedida']"
         />
+        @if (form.get('distancia')?.errors?.['distanciaExcedida']) {
+        <p class="text-red-600 text-xs mt-1">
+          Distancia excedida. Máximo permitido: {{ form.get('distancia')?.errors?.['maxPermitido']
+          }} km
+        </p>
+        } @if (form.get('distancia')?.errors?.['required']) {
+        <p class="text-red-600 text-xs mt-1">La distancia es requerida</p>
+        } @if (form.get('distancia')?.errors?.['min']) {
+        <p class="text-red-600 text-xs mt-1">La distancia mínima es 1 km</p>
+        } @if (form.get('distancia')?.errors?.['max']) {
+        <p class="text-red-600 text-xs mt-1">La distancia máxima es 100 km</p>
+        }
       </div>
 
       <div>
@@ -48,8 +64,13 @@
           type="number"
           formControlName="tarifa"
           placeholder="0.00"
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+          class="block w-full rounded-lg border-0 px-2 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-300 sm:text-sm sm:leading-6"
         />
+        @if (form.get('tarifa')?.errors?.['required']) {
+        <p class="text-red-600 text-xs mt-1">La tarifa es requerida</p>
+        } @if (form.get('tarifa')?.errors?.['min']) {
+        <p class="text-red-600 text-xs mt-1">La tarifa mínima es 0</p>
+        }
       </div>
 
       <button
@@ -60,9 +81,6 @@
         {{ isLoading() ? 'Guardando...' : 'Asignar' }}
       </button>
     </form>
-    <p class="text-xs text-gray-500 mt-2">
-      * Ingresa el ID del usuario manualmente. La distancia debe ser entre 1 y 100.
-    </p>
   </div>
 
   <div class="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden">
@@ -70,7 +88,6 @@
       <table class="w-full text-left text-sm text-gray-600">
         <thead class="bg-gray-50 text-gray-800 font-medium">
           <tr>
-            <th class="px-6 py-3">ID Usuario</th>
             <th class="px-6 py-3">Email</th>
             <th class="px-6 py-3 text-right">Distancia</th>
             <th class="px-6 py-3 text-right">Tarifa</th>
@@ -80,10 +97,9 @@
         <tbody class="divide-y divide-gray-100">
           @for (usuario of usuarios(); track usuario.usuarioId) {
           <tr class="hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4 font-mono text-xs">{{ usuario.usuarioId }}</td>
             <td class="px-6 py-4 font-medium text-gray-900">{{ usuario.usuarioEmail }}</td>
             <td class="px-6 py-4 text-right">{{ usuario.distancia }} km</td>
-            <td class="px-6 py-4 text-right">{{ usuario.tarifa | currency }}</td>
+            <td class="px-6 py-4 text-right">{{ usuario.tarifa | currency: 'HNL ' }}</td>
             <td class="px-6 py-4 text-right">
               <button
                 (click)="onDelete(usuario.usuarioId)"
